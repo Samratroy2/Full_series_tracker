@@ -1,11 +1,12 @@
-//frontend\src\App.js
+// frontend/src/App.js
 
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 
 import Sidebar from './components/Sidebar';
 import { ThemeProvider, useTheme } from './ThemeContext';
 import { ClubProvider } from './contexts/ClubContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 
 import Home from './pages/Home';
 import Watchlist from './pages/Watchlist';
@@ -20,16 +21,20 @@ import ClubList from './pages/ClubList';
 import ClubPage from './pages/ClubPage';
 import CreateClub from './pages/CreateClub';
 
+import Login from './pages/Login';
+import Register from './pages/Register';
+
 import './App.css';
 
 const AppLayout = () => {
   const location = useLocation();
-  const [sidebarVisible, setSidebarVisible] = useState(true); // Always show initially
+  const [sidebarVisible, setSidebarVisible] = useState(true);
   const { darkMode, toggleTheme } = useTheme();
+  const { user } = useAuth();
 
-  const toggleSidebar = () => {
-    setSidebarVisible(prev => !prev);
-  };
+  const noSidebarRoutes = ['/login', '/register'];
+
+  const showSidebar = sidebarVisible && !noSidebarRoutes.includes(location.pathname);
 
   const containerStyle = {
     flex: 1,
@@ -51,12 +56,9 @@ const AppLayout = () => {
         transition: 'background-color 0.3s ease',
       }}
     >
-      {sidebarVisible && <Sidebar />}
+      {showSidebar && <Sidebar />}
 
       <div style={containerStyle}>
-        {/* Sidebar Toggle Button (Top-left corner) */}
-        
-
         {/* Theme Toggle Button */}
         <button
           className="theme-toggle"
@@ -71,25 +73,42 @@ const AppLayout = () => {
             backgroundColor: darkMode ? '#444' : '#ccc',
             border: 'none',
             cursor: 'pointer',
+            zIndex: 10,
           }}
         >
           {darkMode ? '☀️' : '🌙'}
         </button>
 
-        {/* App Routes */}
+        {/* Routes */}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/anime/:id" element={<AnimeDetails />} />
-          <Route path="/watchlist" element={<Watchlist />} />
-          <Route path="/watchlist/watching" element={<Watching />} />
-          <Route path="/watchlist/completed" element={<Completed />} />
-          <Route path="/watchlist/on-hold" element={<OnHold />} />
-          <Route path="/watchlist/dropped" element={<Dropped />} />
-          <Route path="/watchlist/plan-to-watch" element={<PlanToWatch />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/clubs" element={<ClubList />} />
-          <Route path="/clubs/create" element={<CreateClub />} />
-          <Route path="/club/:id" element={<ClubPage />} />
+
+          {/* Protected Routes */}
+          {user ? (
+            <>
+              <Route path="/watchlist" element={<Watchlist />} />
+              <Route path="/watchlist/watching" element={<Watching />} />
+              <Route path="/watchlist/completed" element={<Completed />} />
+              <Route path="/watchlist/on-hold" element={<OnHold />} />
+              <Route path="/watchlist/dropped" element={<Dropped />} />
+              <Route path="/watchlist/plan-to-watch" element={<PlanToWatch />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/clubs" element={<ClubList />} />
+              <Route path="/clubs/create" element={<CreateClub />} />
+              <Route path="/club/:id" element={<ClubPage />} />
+            </>
+          ) : (
+            <>
+              <Route path="/watchlist/*" element={<Navigate to="/login" />} />
+              <Route path="/clubs/*" element={<Navigate to="/login" />} />
+              <Route path="/admin" element={<Navigate to="/login" />} />
+            </>
+          )}
+
+          {/* Auth Pages */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Routes>
       </div>
     </div>
@@ -99,9 +118,11 @@ const AppLayout = () => {
 const App = () => (
   <Router>
     <ThemeProvider>
-      <ClubProvider>
-        <AppLayout />
-      </ClubProvider>
+      <AuthProvider>
+        <ClubProvider>
+          <AppLayout />
+        </ClubProvider>
+      </AuthProvider>
     </ThemeProvider>
   </Router>
 );

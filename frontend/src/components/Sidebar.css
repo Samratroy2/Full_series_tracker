@@ -77,3 +77,175 @@
     margin: 0 auto;
   }
 }
+
+.logout-section {
+  margin-top: auto;
+  padding: 1rem;
+}
+
+.logout-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  color: #ccc;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #ff4d4f;
+  color: #fff;
+}
+
+.profile-circle,
+.profile-circle-collapsed {
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-circle {
+  width: 60px;
+  height: 60px;
+  margin: 0 10px 0 0;
+}
+
+.profile-circle-collapsed {
+  width: 40px;
+  height: 40px;
+  margin: 10px auto;
+}
+
+.profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-wrapper,
+.profile-wrapper-collapsed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.profile-wrapper-collapsed .profile-circle {
+  width: 48px;
+  height: 48px;
+}
+
+.profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+
+.menu-item.logout {
+  margin-top: auto;
+}
+
+.logout-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ccc;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.logout-link:hover {
+  background-color: #f44336;
+  color: #fff;
+}
+
+.sidebar-menu li.logout .icon {
+  font-size: 1.2rem;
+}
+
+.sidebar-menu li.logout .text {
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+
+/* Logout item behaves like other menu items */
+.menu-item.logout {
+  margin-top: auto;
+}
+
+/* Button inside logout menu item */
+.logout-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ccc;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.logout-link:hover {
+  background-color: #f44336;
+  color: #fff;
+}
+
+.sidebar-menu li.logout .icon {
+  font-size: 1.2rem;
+}
+
+.sidebar-menu li.logout .text {
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .logout-link {
+    justify-content: center;
+    padding: 0.7rem 0;
+  }
+
+  .logout-link .text {
+    display: none;
+  }
+
+  .logout-link .icon {
+    margin: 0 auto;
+  }
+}

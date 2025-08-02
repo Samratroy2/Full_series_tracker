@@ -1,14 +1,29 @@
+//frontend\src\pages\Home.js
+
 import React, { useEffect, useState } from 'react';
 import './Home.css';
 import { useTheme } from '../ThemeContext';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
   const { theme } = useTheme();
+  const navigate = useNavigate();
   const [animeList, setAnimeList] = useState([]);
   const [filteredAnime, setFilteredAnime] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [genreFilter, setGenreFilter] = useState('All');
-  const [showBanner, setShowBanner] = useState(true);
+
+  useEffect(() => {
+    const user = localStorage.getItem('user');
+    if (!user) {
+      navigate('/login');
+    }
+  }, [navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
 
   useEffect(() => {
     fetch('http://localhost:5000/api/anime')
@@ -24,7 +39,6 @@ const Home = () => {
 
   useEffect(() => {
     let filtered = animeList;
-
     if (searchQuery.trim() !== '') {
       const q = searchQuery.toLowerCase();
       filtered = filtered.filter(
@@ -42,25 +56,15 @@ const Home = () => {
     setFilteredAnime(filtered);
   }, [searchQuery, genreFilter, animeList]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowBanner(false);
-    }, 5000);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <div className={`home ${theme}`}>
-      {/* Welcome Modal Popup */}
-      {showBanner && (
-        <div className="banner-overlay">
-          <div className="welcome-popup">
-            <button className="close-button" onClick={() => setShowBanner(false)}>×</button>
-            <h2>Welcome to Series Tracker</h2>
-            <p>Track and discover your favorite series!</p>
-          </div>
-        </div>
-      )}
+      <div className="welcome-popup">
+        <h1>Welcome to Series Tracker</h1>
+        <p>Track and discover your favorite series!</p>
+        <button onClick={handleLogout} className="logout-btn">
+          Logout
+        </button>
+      </div>
 
       <div className="home-section">
         <div className="search-filter-bar">
@@ -69,13 +73,11 @@ const Home = () => {
             placeholder="Search by title, genre or year..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="search-input"
           />
 
           <select
             value={genreFilter}
             onChange={(e) => setGenreFilter(e.target.value)}
-            className="filter-select"
           >
             {genres.map((genre, index) => (
               <option key={index} value={genre}>
@@ -85,13 +87,10 @@ const Home = () => {
           </select>
 
           {(searchQuery || genreFilter !== 'All') && (
-            <button
-              onClick={() => {
-                setSearchQuery('');
-                setGenreFilter('All');
-              }}
-              className="clear-filter-btn"
-            >
+            <button onClick={() => {
+              setSearchQuery('');
+              setGenreFilter('All');
+            }}>
               Clear
             </button>
           )}
