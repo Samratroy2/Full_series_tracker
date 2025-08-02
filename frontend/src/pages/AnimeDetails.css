@@ -1,0 +1,33 @@
+/* frontend\src\pages\AnimeDetails.css*/
+/* frontend/src/pages/AnimeDetails.css */
+
+.anime-details {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  color: #fff;
+  max-width: 800px;
+  margin: auto;
+}
+
+.anime-image {
+  max-width: 100%;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.anime-info {
+  background-color: #1e1e2f;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.anime-info h2 {
+  margin-bottom: 10px;
+}
+
+.details-loading {
+  color: white;
+  text-align: center;
+  padding: 50px;
+}

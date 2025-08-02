@@ -1,0 +1,88 @@
+/*frontend\src\App.css*/
+
+.app {
+  text-align: center;
+  padding: 2rem;
+  font-family: 'Poppins', Arial, sans-serif;
+  background-color: var(--background);
+  min-height: 100vh;
+  color: var(--text);
+}
+
+.card {
+  background: var(--card);
+  margin: 1rem auto;
+  padding: 1.5rem;
+  max-width: 450px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.progress-container {
+  margin: 15px 0;
+  background: var(--input);
+  border-radius: 10px;
+  position: relative;
+  height: 22px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background: linear-gradient(90deg, #4caf50, #81c784);
+  height: 100%;
+  width: 0; /* Set width dynamically */
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+.progress-container span {
+  position: absolute;
+  right: 10px;
+  top: 0;
+  color: var(--text);
+  font-size: 12px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+}
+
+
+:root {
+  --background: #f0f2f5;
+  --text: #111;
+  --card: #ffffff;
+  --input: #e0e0e0;
+}
+
+[data-theme="dark"] {
+  --background: #181818;
+  --text: #fafafa;
+  --card: #242424;
+  --input: #333;
+}
+
+
+/* App.css */
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.main-content {
+  flex: 1;
+  min-width: 300px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+}

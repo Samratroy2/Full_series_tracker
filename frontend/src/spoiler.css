@@ -1,0 +1,12 @@
+/* frontend\src\spoiler.css */
+.spoiler {
+  background-color: #444;
+  color: transparent;
+  border-radius: 4px;
+  padding: 0.2rem 0.4rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+.spoiler.revealed {
+  color: white;
+}

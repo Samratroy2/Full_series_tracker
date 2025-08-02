@@ -1,0 +1,270 @@
+/* frontend\src\pages\ClubList.css */
+:root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f0f2f5;
+    --text-primary: #050505;
+    --text-secondary: #65676b;
+    --accent: #1877f2;
+    --border-color: #ddd;
+  }
+  
+  body.dark-mode {
+    --bg-primary: #18191a;
+    --bg-secondary: #242526;
+    --text-primary: #e4e6eb;
+    --text-secondary: #b0b3b8;
+    --accent: #2e89ff;
+    --border-color: #3a3b3c;
+  }
+  
+  /* ========= Base Styles ========= */
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s, color 0.3s;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  /* ========= Layout ========= */
+  .club-messenger-layout {
+    display: flex;
+    height: 100vh;
+    background-color: var(--bg-primary);
+  }
+  
+  /* ========= Sidebar ========= */
+  .club-sidebar {
+    width: 300px;
+    background-color: var(--bg-secondary);
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border-color);
+  }
+  
+  .club-sidebar-header {
+    padding: 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    background-color: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  /* Create Club */
+  .club-create {
+    padding: 10px;
+    display: flex;
+    gap: 5px;
+  }
+  
+  .club-create input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .club-create button {
+    background-color: var(--accent);
+    color: #ffffff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  /* ========= Club List ========= */
+  .club-list {
+    flex-grow: 1;
+    overflow-y: auto;
+  }
+  
+  .club-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+  }
+  
+  .club-item:hover {
+    background-color: var(--accent);
+    color: #ffffff;
+  }
+  
+  .club-name {
+    flex-grow: 1;
+  }
+  
+  /* Delete Button */
+  .delete-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 18px;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  
+  .delete-btn:hover {
+    color: red;
+  }
+  
+  /* ========= Club Content ========= */
+  .club-content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: var(--bg-primary);
+  }
+  
+  /* ========= Club Page ========= */
+  .club-page-container {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    padding: 20px;
+    min-height: 100vh;
+  }
+  
+  /* Back Button */
+  .back-btn {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 16px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  
+  .back-btn:hover {
+    text-decoration: underline;
+  }
+  
+  /* Club Sections */
+  .club-section {
+    margin-bottom: 30px;
+  }
+  
+  /* ========= Polls ========= */
+  .poll-box {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: var(--bg-secondary);
+    border-radius: 10px;
+    transition: background-color 0.3s;
+  }
+  
+  .poll-option {
+    list-style: none;
+  }
+  
+  /* Create Poll */
+  .create-poll input {
+    width: 100%;
+    margin: 8px 0;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .create-poll button {
+    background-color: var(--accent);
+    color: #ffffff;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  /* ========= Chat ========= */
+  .chat-box {
+    max-height: 300px;
+    overflow-y: auto;
+    background-color: var(--bg-secondary);
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    transition: background-color 0.3s;
+  }
+  
+  .chat-message {
+    padding: 8px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .chat-message:last-child {
+    border-bottom: none;
+  }
+  
+  /* Chat Input */
+  .chat-input {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .chat-input button {
+    background-color: var(--accent);
+    color: #ffffff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  /* ========= Global Cards, Buttons, Inputs ========= */
+  .card {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-radius: 10px;
+    padding: 15px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .button {
+    background-color: var(--accent);
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .button:hover {
+    background-color: #3399ff;
+  }
+  
+  input, textarea {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    border-radius: 8px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  input::placeholder, textarea::placeholder {
+    color: var(--text-secondary);
+  }
+  
+  
