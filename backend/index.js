@@ -1,26 +1,35 @@
-// backend/index.js
-
 const express = require('express');
-const app = express();
+const mongoose = require('mongoose');
 const cors = require('cors');
+
 const animeRoutes = require('./routes/anime');
+const authRoutes = require('./routes/authRoutes');
+
+const app = express();
+const PORT = 5000;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// Use local JSON API route
+// Routes
 app.use('/api/anime', animeRoutes);
+app.use('/api/auth', authRoutes);
 
 // Root route
 app.get('/', (req, res) => {
   res.send('API is working');
 });
 
-// Remove MongoDB connection (if not using it)
-
-// Start server
-const PORT = 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost:27017/animeClubApp', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+  .then(() => {
+    console.log('✅ Connected to MongoDB');
+    app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
+  })
+  .catch(err => {
+    console.error('❌ MongoDB connection failed:', err.message);
+  });
