@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../ThemeContext';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import './ForgotPassword.css';
 
 const ForgotPassword = () => {
@@ -8,6 +9,7 @@ const ForgotPassword = () => {
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
   const [error, setError] = useState('');
@@ -30,25 +32,19 @@ const ForgotPassword = () => {
   const handleSendOtp = async () => {
     setError('');
     setMessage('');
-
     if (!validateEmail(email)) return setError('Please enter a valid email');
     setLoading(true);
-
     try {
       const res = await fetch('http://localhost:5000/api/auth/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
-
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to send OTP');
-
-      setMessage('✅ OTP sent! Check your inbox or spam folder.');
+      setMessage('✅ OTP sent! Check your inbox.');
       setOtpSent(true);
       setResendTimer(30);
-
-      // Focus OTP input after sending
       setTimeout(() => otpRef.current?.focus(), 100);
     } catch (err) {
       setError(`❌ ${err.message}`);
@@ -60,12 +56,12 @@ const ForgotPassword = () => {
   const handleResetPassword = async () => {
     setError('');
     setMessage('');
-
-    if (!otp.trim() || !newPassword.trim())
+    if (!otp.trim() || !newPassword.trim()) {
       return setError('Please fill in all fields');
-
-    if (newPassword.length < 6)
+    }
+    if (newPassword.length < 6) {
       return setError('Password must be at least 6 characters');
+    }
 
     setLoading(true);
     try {
@@ -74,10 +70,8 @@ const ForgotPassword = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp, newPassword }),
       });
-
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to reset password');
-
       setMessage('🎉 Password reset successful! Redirecting...');
       setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
@@ -89,7 +83,7 @@ const ForgotPassword = () => {
 
   return (
     <div className={`auth-wrapper ${darkMode ? 'dark' : ''}`}>
-      <div className="auth-container">
+      <div className={`auth-container ${error ? 'shake' : ''}`}>
         <form
           className="auth-form"
           onSubmit={(e) => {
@@ -121,13 +115,21 @@ const ForgotPassword = () => {
                 ref={otpRef}
                 required
               />
-              <input
-                type="password"
-                placeholder="Enter new password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                required
-              />
+              <div className="password-wrapper">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Enter new password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                />
+                <span
+                  className="eye-icon"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
             </>
           )}
 
@@ -145,14 +147,22 @@ const ForgotPassword = () => {
             <button
               type="button"
               onClick={handleSendOtp}
-              disabled={resendTimer > 0}
+              disabled={resendTimer > 0 || loading}
               className="resend-btn"
             >
               {resendTimer > 0
-                ? `Resend OTP in ${resendTimer}s`
+                ? `⏱ Resend OTP in ${resendTimer}s`
                 : 'Resend OTP'}
             </button>
           )}
+
+          <button
+            type="button"
+            className="back-login-btn"
+            onClick={() => navigate('/login')}
+          >
+            Back to Login
+          </button>
         </form>
       </div>
     </div>
