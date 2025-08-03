@@ -1,5 +1,7 @@
 /*frontend\src\pages\AdminPanel.css*/
 .admin-container {
+    margin-left: 65px;
+    margin-right: 65px;
     padding: 2rem;
     transition: background-color 0.3s, color 0.3s;
   }
@@ -47,5 +49,6 @@
   
   .admin-item button:hover {
     background: #ff1a1a;
+    color: black
   }
   

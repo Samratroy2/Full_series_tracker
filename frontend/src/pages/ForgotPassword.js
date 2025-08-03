@@ -1,6 +1,7 @@
 // frontend\src\pages\ForgotPassword.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './ForgotPassword.css'
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -57,47 +58,50 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="login-container">
-      <form className="login-form" onSubmit={(e) => e.preventDefault()}>
-        <h2>Forgot Password</h2>
+    <div className="auth-wrapper">
+      <div className="auth-container">
+        <form className="auth-form" onSubmit={(e) => e.preventDefault()}>
+          <h2>Forgot Password</h2>
 
-        <input
-          type="email"
-          placeholder="Enter your email"
-          value={email}
-          disabled={otpSent}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+          <input
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            disabled={otpSent}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
-        {!otpSent ? (
-          <button onClick={handleSendOtp} disabled={loading}>
-            {loading ? 'Sending OTP...' : 'Send OTP'}
-          </button>
-        ) : (
-          <>
-            <input
-              type="text"
-              placeholder="Enter OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              required
-            />
-            <input
-              type="password"
-              placeholder="Enter new password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              required
-            />
-            <button onClick={handleResetPassword} disabled={loading}>
-              {loading ? 'Resetting...' : 'Reset Password'}
+          {!otpSent ? (
+            <button onClick={handleSendOtp} disabled={loading}>
+              {loading ? 'Sending OTP...' : 'Send OTP'}
             </button>
-          </>
-        )}
-      </form>
+          ) : (
+            <>
+              <input
+                type="text"
+                placeholder="Enter OTP"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                required
+              />
+              <input
+                type="password"
+                placeholder="Enter new password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+              />
+              <button onClick={handleResetPassword} disabled={loading}>
+                {loading ? 'Resetting...' : 'Reset Password'}
+              </button>
+            </>
+          )}
+        </form>
+      </div>
     </div>
   );
+
 };
 
 export default ForgotPassword;

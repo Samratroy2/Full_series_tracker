@@ -127,5 +127,31 @@ router.get('/users', async (req, res) => {
   }
 });
 
+// ✅ Delete a user (admin only)
+router.delete('/users/:id', async (req, res) => {
+  const { adminEmail } = req.query;
+
+  if (adminEmail !== 'trysamrat1@gmail.com') {
+    return res.status(403).json({ message: 'Unauthorized access' });
+  }
+
+  try {
+    const userId = req.params.id;
+
+    // 🔁 Optional: remove related data (e.g. Watchlists, Clubs, etc.)
+    // await Watchlist.deleteMany({ userId });
+
+    const deleted = await User.findByIdAndDelete(userId);
+
+    if (!deleted) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({ message: 'User deleted successfully' });
+  } catch (err) {
+    console.error('❌ Delete failed:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
 
 module.exports = router;
