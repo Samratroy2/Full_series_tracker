@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+// src/components/Sidebar.js
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import {
@@ -11,23 +12,36 @@ import {
   Users,
   Shield,
   LogOut,
-  Menu
+  Menu,
+  X,
 } from 'lucide-react';
 
 import './Sidebar.css';
 
 const Sidebar = () => {
   const location = useLocation();
-  const [isOpen, setIsOpen] = useState(true);
-  const { logout, user } = useAuth();
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 374);
+  const { user, loading, logout } = useAuth();
+
+  const toggleSidebar = () => setIsOpen(prev => !prev);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const isNowMobile = window.innerWidth <= 374;
+      setIsMobile(isNowMobile);
+      if (isNowMobile) setIsOpen(false);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
-
-  const toggleSidebar = () => setIsOpen(prev => !prev);
 
   const menuItems = [
     { name: 'Home', path: '/', icon: <Home size={20} />, title: 'Home' },
@@ -37,30 +51,29 @@ const Sidebar = () => {
     { name: 'Dropped', path: '/watchlist/dropped', icon: <XCircle size={20} />, title: 'Dropped' },
     { name: 'Plan to Watch', path: '/watchlist/plan-to-watch', icon: <Clock size={20} />, title: 'Plan to Watch' },
     { name: 'Clubs', path: '/clubs', icon: <Users size={20} />, title: 'Clubs' },
-    { name: 'Admin Panel', path: '/admin', icon: <Shield size={20} />, title: 'Admin Panel' }
+    { name: 'Admin Panel', path: '/admin', icon: <Shield size={20} />, title: 'Admin Panel' },
   ];
 
-  const defaultImage = 'https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png';
-  const profileImage = user?.photo || defaultImage;
-
   return (
-    <div className={`sidebar ${isOpen ? 'expanded' : 'collapsed'}`}>
-      <div className="sidebar-top">
-        <button className="toggle-btn" onClick={toggleSidebar}>
-          <Menu size={22} />
+    <div className={`sidebar ${isOpen ? 'expanded' : 'collapsed'} ${isMobile ? 'mobile' : ''}`}>
+      {!isMobile && (
+        <button className="sidebar-toggle-btn" onClick={toggleSidebar}>
+          {isOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
+      )}
 
-        <div className="sidebar-header">
-          <div className={isOpen ? 'profile-wrapper' : 'profile-wrapper-collapsed'}>
-            <div className="profile-circle">
-              <img
-                src={profileImage}
-                alt="User"
-                className="profile-image"
-              />
-            </div>
-            {isOpen && user?.photo && <h2 className="sidebar-title">AniTrack</h2>}
+      <div className="sidebar-header">
+        <div className={isOpen ? 'profile-wrapper' : 'profile-wrapper-collapsed'}>
+          <div className="logo-circle">
+            <img
+              src="https://t4.ftcdn.net/jpg/06/59/13/31/360_F_659133125_S0VAnb5NNknokdB47K61zDsczWgZJTMf.jpg"
+              alt="Logo"
+              className="logo-image"
+            />
           </div>
+          {!loading && isOpen && (
+            <h2 className="sidebar-user-name">{user?.name || 'Guest'}</h2>
+          )}
         </div>
       </div>
 
@@ -78,7 +91,6 @@ const Sidebar = () => {
           </li>
         ))}
 
-        {/* Logout button styled same as menu items */}
         <li className="menu-item logout" title={!isOpen ? 'Logout' : ''}>
           <button className="logout-link" onClick={handleLogout}>
             <span className="icon"><LogOut size={20} /></span>

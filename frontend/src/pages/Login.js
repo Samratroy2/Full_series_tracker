@@ -1,18 +1,20 @@
 // src/pages/Login.js
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext'; // ✅ Import AuthContext
 import './Login.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { login } = useAuth(); // ✅ use login function from context
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Dummy login: use fixed credentials
-    if (email === 'test@example.com' && password === '123456') {
-      localStorage.setItem('user', JSON.stringify({ email }));
+    const success = login(email, password); // ✅ Call context login
+    if (success) {
+      sessionStorage.setItem('justLoggedIn', 'true');
       navigate('/');
     } else {
       alert('Invalid credentials');
@@ -38,6 +40,10 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button type="submit">Login</button>
+
+        <p className="register-text">
+          New user? <Link to="/register">Register here</Link>
+        </p>
       </form>
     </div>
   );

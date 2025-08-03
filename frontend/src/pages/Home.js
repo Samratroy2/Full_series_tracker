@@ -1,5 +1,3 @@
-//frontend\src\pages\Home.js
-
 import React, { useEffect, useState } from 'react';
 import './Home.css';
 import { useTheme } from '../ThemeContext';
@@ -12,11 +10,17 @@ const Home = () => {
   const [filteredAnime, setFilteredAnime] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [genreFilter, setGenreFilter] = useState('All');
+  const [showWelcome, setShowWelcome] = useState(false); // 👈 new state
 
   useEffect(() => {
     const user = localStorage.getItem('user');
+    const justLoggedIn = sessionStorage.getItem('justLoggedIn'); // 👈
+
     if (!user) {
       navigate('/login');
+    } else if (justLoggedIn) {
+      setShowWelcome(true);
+      sessionStorage.removeItem('justLoggedIn'); // 👈 Only once
     }
   }, [navigate]);
 
@@ -58,13 +62,12 @@ const Home = () => {
 
   return (
     <div className={`home ${theme}`}>
-      <div className="welcome-popup">
-        <h1>Welcome to Series Tracker</h1>
-        <p>Track and discover your favorite series!</p>
-        <button onClick={handleLogout} className="logout-btn">
-          Logout
-        </button>
-      </div>
+      {showWelcome && (
+        <div className="welcome-popup">
+          <h1>Welcome to Series Tracker</h1>
+          <p>Track and discover your favorite series!</p>
+        </div>
+      )}
 
       <div className="home-section">
         <div className="search-filter-bar">

@@ -1,26 +1,51 @@
 // src/contexts/AuthContext.js
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // New loading state
+
   const [users, setUsers] = useState(() => {
-    // Load users from localStorage if available
     const stored = localStorage.getItem('users');
-    return stored ? JSON.parse(stored) : [{ name: 'Test User', email: 'test@example.com', password: '123456' }];
+    return stored
+      ? JSON.parse(stored)
+      : [{ name: 'Test User', email: 'test@example.com', password: '123456' }];
   });
 
+  // Load user from localStorage on initial mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+    setLoading(false); // Done loading
+  }, []);
+
+  // Persist users list on change
   useEffect(() => {
     localStorage.setItem('users', JSON.stringify(users));
   }, [users]);
+
+  // Persist user on change
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+  }, [user]);
 
   const login = (email, password) => {
     const existingUser = users.find(
       u => u.email === email && u.password === password
     );
     if (existingUser) {
-      setUser({ name: existingUser.name, email: existingUser.email });
+      const loggedInUser = { name: existingUser.name, email: existingUser.email };
+      setUser(loggedInUser);
+      localStorage.setItem('user', JSON.stringify(loggedInUser));
       return true;
     }
     return false;
@@ -28,6 +53,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem('user');
   };
 
   const signup = (name, email, password) => {
@@ -40,7 +66,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, signup }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, signup }}>
       {children}
     </AuthContext.Provider>
   );
