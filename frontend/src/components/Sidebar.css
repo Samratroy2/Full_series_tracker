@@ -199,11 +199,16 @@
 }
 
 .sidebar-toggle-btn {
+  display: flex; /* required for centering */
+  align-items: center; /* vertical alignment */
+  justify-content: center; /* horizontal alignment */
   background: transparent;
   border: none;
   cursor: pointer;
   color: #fff;
   transition: transform 0.2s ease;
+  padding: 0.5rem;
+  margin: 0 auto; /* centers it horizontally if parent is block */
 }
 
 .sidebar-toggle-btn:hover {

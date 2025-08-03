@@ -109,3 +109,19 @@ body {
     flex-direction: column;
   }
 }
+
+.main-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 65px; /* or actual width */
+  flex-shrink: 0;
+}
+
+.main-content {
+  flex: 1;
+  padding: 1rem;
+  box-sizing: border-box;
+}

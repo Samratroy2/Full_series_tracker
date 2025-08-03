@@ -24,18 +24,19 @@ const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(true);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 374);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const { user, loading, logout } = useAuth();
 
   const toggleSidebar = () => setIsOpen(prev => !prev);
 
   useEffect(() => {
     const handleResize = () => {
-      const isNowMobile = window.innerWidth <= 374;
-      setIsMobile(isNowMobile);
-      if (isNowMobile) setIsOpen(false);
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      setIsOpen(!mobile);
     };
-    handleResize();
+
+    handleResize(); // Initial check
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -53,18 +54,18 @@ const Sidebar = () => {
     { name: 'Dropped', path: '/watchlist/dropped', icon: <XCircle size={20} />, title: 'Dropped' },
     { name: 'Plan to Watch', path: '/watchlist/plan-to-watch', icon: <Clock size={20} />, title: 'Plan to Watch' },
     { name: 'Clubs', path: '/clubs', icon: <Users size={20} />, title: 'Clubs' },
-    { name: 'Search', path: '/filter?search=true', icon: <Search size={20} />, title: 'Search Anime' },
+    { name: 'Search', path: '/search', icon: <Search size={20} />, title: 'Search Anime' },         // ✅ Updated path
     { name: 'Filter', path: '/filter?filter=true', icon: <Filter size={20} />, title: 'Filter by Genre' },
     { name: 'Admin Panel', path: '/admin', icon: <Shield size={20} />, title: 'Admin Panel' },
   ];
 
   return (
     <div className={`sidebar ${isOpen ? 'expanded' : 'collapsed'} ${isMobile ? 'mobile' : ''}`}>
-      {!isMobile && (
+      <div className="sidebar-top">
         <button className="sidebar-toggle-btn" onClick={toggleSidebar}>
           {isOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
-      )}
+      </div>
 
       <div className="sidebar-header">
         <div className={isOpen ? 'profile-wrapper' : 'profile-wrapper-collapsed'}>
@@ -82,18 +83,21 @@ const Sidebar = () => {
       </div>
 
       <ul className="sidebar-menu">
-        {menuItems.map((item, idx) => (
-          <li
-            key={idx}
-            className={`menu-item ${location.pathname === item.path ? 'active' : ''}`}
-            title={!isOpen ? item.title : ''}
-          >
-            <Link to={item.path}>
-              <span className="icon">{item.icon}</span>
-              {isOpen && <span className="text">{item.name}</span>}
-            </Link>
-          </li>
-        ))}
+        {menuItems.map((item, idx) => {
+          const isActive = location.pathname === item.path;
+          return (
+            <li
+              key={idx}
+              className={`menu-item ${isActive ? 'active' : ''}`}
+              title={!isOpen ? item.title : ''}
+            >
+              <Link to={item.path}>
+                <span className="icon">{item.icon}</span>
+                {isOpen && <span className="text">{item.name}</span>}
+              </Link>
+            </li>
+          );
+        })}
 
         <li className="menu-item logout" title={!isOpen ? 'Logout' : ''}>
           <button className="logout-link" onClick={handleLogout}>

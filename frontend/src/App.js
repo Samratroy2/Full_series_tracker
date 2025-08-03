@@ -31,29 +31,19 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 
 import './App.css';
+import Search from './pages/Search';
 
 const AppLayout = () => {
   const location = useLocation();
-  const [sidebarVisible, setSidebarVisible] = useState(true);
   const { darkMode, toggleTheme } = useTheme();
   const { user, loading } = useAuth();
+
+  const noSidebarRoutes = ['/login', '/register', '/forgot-password', '/verify-otp', '/reset-password'];
+  const showSidebar = !noSidebarRoutes.includes(location.pathname);
 
   if (loading) {
     return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading...</div>;
   }
-
-  const noSidebarRoutes = ['/login', '/register', '/forgot-password', '/verify-otp', '/reset-password'];
-  const showSidebar = sidebarVisible && !noSidebarRoutes.includes(location.pathname);
-
-  const containerStyle = {
-    flex: 1,
-    padding: '1rem',
-    position: 'relative',
-    backgroundColor: darkMode ? '#000000' : '#ffffff',
-    color: darkMode ? '#F14A00' : '#000000',
-    minHeight: '100vh',
-    transition: 'all 0.3s ease',
-  };
 
   const isAuthenticated = !!user;
 
@@ -65,11 +55,22 @@ const AppLayout = () => {
         flexDirection: 'row',
         backgroundColor: darkMode ? '#000000' : '#f5f5f5',
         transition: 'background-color 0.3s ease',
+        minHeight: '100vh',
       }}
     >
       {showSidebar && <Sidebar />}
 
-      <div style={containerStyle}>
+      <div
+        style={{
+          flex: 1,
+          padding: '1rem',
+          position: 'relative',
+          backgroundColor: darkMode ? '#000000' : '#ffffff',
+          color: darkMode ? '#F14A00' : '#000000',
+          transition: 'all 0.3s ease',
+        }}
+      >
+        {/* Theme Toggle Button */}
         <button
           className="theme-toggle"
           onClick={toggleTheme}
@@ -85,21 +86,22 @@ const AppLayout = () => {
             border: 'none',
             cursor: 'pointer',
             zIndex: 10,
-            boxShadow: darkMode
-              ? '0 0 10px #4B4376'
-              : '0 0 8px rgba(0, 0, 0, 0.1)',
+            boxShadow: darkMode ? '0 0 10px #4B4376' : '0 0 8px rgba(0, 0, 0, 0.1)',
           }}
         >
           {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
         </button>
 
         <Routes>
-          {/* Public Routes */}
+          {/* Auth Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+
+          {/* Public/Shared Route */}
+          <Route path="/filter" element={<FilterPage />} />
 
           {/* Protected Routes */}
           <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/login" />} />
@@ -110,11 +112,13 @@ const AppLayout = () => {
           <Route path="/watchlist/on-hold" element={isAuthenticated ? <OnHold /> : <Navigate to="/login" />} />
           <Route path="/watchlist/dropped" element={isAuthenticated ? <Dropped /> : <Navigate to="/login" />} />
           <Route path="/watchlist/plan-to-watch" element={isAuthenticated ? <PlanToWatch /> : <Navigate to="/login" />} />
-          <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
           <Route path="/clubs" element={isAuthenticated ? <ClubList /> : <Navigate to="/login" />} />
           <Route path="/clubs/create" element={isAuthenticated ? <CreateClub /> : <Navigate to="/login" />} />
           <Route path="/club/:id" element={isAuthenticated ? <ClubPage /> : <Navigate to="/login" />} />
-          <Route path="/filter" element={<FilterPage />} />
+          <Route path="/search" element={isAuthenticated ? <Search /> : <Navigate to="/login" />} />
+
+          {/* Admin Route */}
+          <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
         </Routes>
       </div>
     </div>
