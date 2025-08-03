@@ -1,36 +1,37 @@
 // src/pages/Login.js
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Login.css'
+import { useAuth } from '../contexts/AuthContext';
+import './Login.css';
+
 const Login = () => {
+  const { login, continueAsGuest } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-      
+    const result = await login(email, password);
+    if (result.success) {
       alert('✅ Login successful');
-      navigate('/dashboard', { state: { user: data.user } });
-    } catch (err) {
-      alert(`❌ ${err.message}`);
+      navigate('/'); // home or dashboard
+    } else {
+      alert(`❌ ${result.message}`);
     }
   };
 
   const handleGuest = () => {
-    navigate('/dashboard', { state: { guest: true } });
+    continueAsGuest();
+    navigate('/');
   };
 
   const handleForgotPassword = () => {
     navigate('/forgot-password');
+  };
+
+  const handleRegister = () => {
+    navigate('/register');
   };
 
   return (
@@ -51,9 +52,15 @@ const Login = () => {
         />
         <button onClick={handleLogin}>Login</button>
         <button type="button" className="guest" onClick={handleGuest}>Continue as Guest</button>
-        <p style={{ marginTop: '10px', cursor: 'pointer', color: 'blue' }} onClick={handleForgotPassword}>
-          Forgot Password?
-        </p>
+
+        <div className="login-links">
+          <p onClick={handleForgotPassword} style={{ cursor: 'pointer', color: 'blue' }}>
+            Forgot Password?
+          </p>
+          <p onClick={handleRegister} style={{ cursor: 'pointer', color: 'blue' }}>
+            New here? Register
+          </p>
+        </div>
       </form>
     </div>
   );

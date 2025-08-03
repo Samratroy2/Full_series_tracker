@@ -1,21 +1,41 @@
-//frontend\src\pages\Admin.js
+// frontend/src/pages/Admin.js
 
-import React, { useState } from 'react';
-import './AdminPanel.css'; // keeping external CSS for clean styles
+import React, { useEffect, useState } from 'react';
+import './AdminPanel.css';
+import { useAuth } from '../contexts/AuthContext';
+import { Navigate } from 'react-router-dom';
 
 const AdminPanel = () => {
-  const [users, setUsers] = useState([
-    { id: 1, name: "Admin", email: "admin@example.com" },
-    { id: 2, name: "User1", email: "user1@example.com" }
-  ]);
-
+  const { user } = useAuth();
+  const [users, setUsers] = useState([]);
   const [clubs, setClubs] = useState([
-    { id: 1, name: "Attack on Titan Fans", members: 10 },
-    { id: 2, name: "Fantasy Lovers", members: 7 }
+    { id: 1, name: 'Attack on Titan Fans', members: 10 },
+    { id: 2, name: 'Fantasy Lovers', members: 7 }
   ]);
 
-  const deleteUser = (id) => {
-    setUsers(users.filter(user => user.id !== id));
+  // Only admin can access
+  if (!user || user.email !== 'trysamrat1@gmail.com') {
+    return <Navigate to="/login" />;
+  }
+
+  // Fetch real users from backend
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/auth/users?email=${user.email}`);
+        const data = await res.json();
+        setUsers(data);
+      } catch (err) {
+        console.error('Failed to fetch users:', err);
+      }
+    };
+
+    fetchUsers();
+  }, [user.email]);
+
+  const deleteUser = async (id) => {
+    // Optional: Add delete request to backend
+    setUsers(users.filter(user => user._id !== id));
   };
 
   const deleteClub = (id) => {
@@ -29,13 +49,13 @@ const AdminPanel = () => {
       <section>
         <h2>Users</h2>
         {users.length === 0 ? (
-          <p>No users available.</p>
+          <p>No users found.</p>
         ) : (
           <ul className="admin-list">
             {users.map(user => (
-              <li key={user.id} className="admin-item">
-                <span><strong>{user.name}</strong> ({user.email})</span>
-                <button onClick={() => deleteUser(user.id)}>Remove</button>
+              <li key={user._id} className="admin-item">
+                <span><strong>{user.name || 'No Name'}</strong> ({user.email})</span>
+                <button onClick={() => deleteUser(user._id)}>Remove</button>
               </li>
             ))}
           </ul>

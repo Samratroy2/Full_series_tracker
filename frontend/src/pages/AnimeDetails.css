@@ -1,33 +1,18 @@
-/* frontend\src\pages\AnimeDetails.css*/
-/* frontend/src/pages/AnimeDetails.css */
+/*frontend\src\pages\AnimeDetails.css*/
 
-.anime-details {
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  color: #fff;
-  max-width: 800px;
-  margin: auto;
+.user-management {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: #f4f4f4;
+  border-radius: 8px;
 }
 
-.anime-image {
-  max-width: 100%;
-  border-radius: 10px;
-  margin-bottom: 20px;
+.user-management ul {
+  list-style: none;
+  padding: 0;
 }
 
-.anime-info {
-  background-color: #1e1e2f;
-  padding: 20px;
-  border-radius: 10px;
-}
-
-.anime-info h2 {
-  margin-bottom: 10px;
-}
-
-.details-loading {
-  color: white;
-  text-align: center;
-  padding: 50px;
+.user-management li {
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
 }

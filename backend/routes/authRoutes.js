@@ -1,3 +1,4 @@
+// backend\routes\authRoutes.js
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
@@ -108,5 +109,23 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Login failed', error: err.message });
   }
 });
+
+// ✅ Get all users (only for admin)
+router.get('/users', async (req, res) => {
+  const { email } = req.query;
+
+  // Only admin can access user list
+  if (email !== 'trysamrat1@gmail.com') {
+    return res.status(403).json({ message: 'Unauthorized access' });
+  }
+
+  try {
+    const users = await User.find().select('-password -otp -otpExpires');
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch users', error: err.message });
+  }
+});
+
 
 module.exports = router;

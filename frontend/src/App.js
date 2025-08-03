@@ -1,6 +1,5 @@
 // frontend/src/App.js
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 
 import Sidebar from './components/Sidebar';
@@ -24,6 +23,7 @@ import AnimeDetails from './pages/AnimeDetails';
 import ClubList from './pages/ClubList';
 import ClubPage from './pages/ClubPage';
 import CreateClub from './pages/CreateClub';
+import AdminRoute from './components/AdminRoute';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -34,10 +34,14 @@ const AppLayout = () => {
   const location = useLocation();
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const { darkMode, toggleTheme } = useTheme();
-  const { user } = useAuth();
+  const { user, loading, login } = useAuth();
+
+  if (loading) {
+    return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading...</div>;
+  }
+
 
   const noSidebarRoutes = ['/login', '/register', '/forgot-password', '/verify-otp', '/reset-password'];
-
   const showSidebar = sidebarVisible && !noSidebarRoutes.includes(location.pathname);
 
   const containerStyle = {
@@ -49,6 +53,8 @@ const AppLayout = () => {
     minHeight: '100vh',
     transition: 'all 0.3s ease',
   };
+
+  const isAuthenticated = !!user;
 
   return (
     <div
@@ -63,7 +69,6 @@ const AppLayout = () => {
       {showSidebar && <Sidebar />}
 
       <div style={containerStyle}>
-        {/* Theme Toggle Button */}
         <button
           className="theme-toggle"
           onClick={toggleTheme}
@@ -83,11 +88,7 @@ const AppLayout = () => {
           {darkMode ? '☀️' : '🌙'}
         </button>
 
-        {/* Routes */}
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/anime/:id" element={<AnimeDetails />} />
-
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -96,28 +97,19 @@ const AppLayout = () => {
           <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* Protected Routes */}
-          {user ? (
-            <>
-              <Route path="/watchlist" element={<Watchlist />} />
-              <Route path="/watchlist/watching" element={<Watching />} />
-              <Route path="/watchlist/completed" element={<Completed />} />
-              <Route path="/watchlist/on-hold" element={<OnHold />} />
-              <Route path="/watchlist/dropped" element={<Dropped />} />
-              <Route path="/watchlist/plan-to-watch" element={<PlanToWatch />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/clubs" element={<ClubList />} />
-              <Route path="/clubs/create" element={<CreateClub />} />
-              <Route path="/club/:id" element={<ClubPage />} />
-            </>
-          ) : (
-            <>
-              <Route path="/watchlist/*" element={<Navigate to="/login" />} />
-              <Route path="/clubs/*" element={<Navigate to="/login" />} />
-              <Route path="/admin" element={<Navigate to="/login" />} />
-            </>
-          )}
+          <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/login" />} />
+          <Route path="/anime/:id" element={isAuthenticated ? <AnimeDetails /> : <Navigate to="/login" />} />
+          <Route path="/watchlist" element={isAuthenticated ? <Watchlist /> : <Navigate to="/login" />} />
+          <Route path="/watchlist/watching" element={isAuthenticated ? <Watching /> : <Navigate to="/login" />} />
+          <Route path="/watchlist/completed" element={isAuthenticated ? <Completed /> : <Navigate to="/login" />} />
+          <Route path="/watchlist/on-hold" element={isAuthenticated ? <OnHold /> : <Navigate to="/login" />} />
+          <Route path="/watchlist/dropped" element={isAuthenticated ? <Dropped /> : <Navigate to="/login" />} />
+          <Route path="/watchlist/plan-to-watch" element={isAuthenticated ? <PlanToWatch /> : <Navigate to="/login" />} />
+          <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+          <Route path="/clubs" element={isAuthenticated ? <ClubList /> : <Navigate to="/login" />} />
+          <Route path="/clubs/create" element={isAuthenticated ? <CreateClub /> : <Navigate to="/login" />} />
+          <Route path="/club/:id" element={isAuthenticated ? <ClubPage /> : <Navigate to="/login" />} />
         </Routes>
-
       </div>
     </div>
   );

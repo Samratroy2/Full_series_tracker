@@ -5,17 +5,14 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  // Load user from localStorage on initial mount
-  useEffect(() => {
+  const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem('user');
-    if (storedUser) setUser(JSON.parse(storedUser));
-    setLoading(false);
-  }, []);
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
-  // Persist user on change
+  const [loading, setLoading] = useState(false);
+
+  // Sync user state with localStorage
   useEffect(() => {
     if (user) {
       localStorage.setItem('user', JSON.stringify(user));
@@ -38,6 +35,7 @@ export const AuthProvider = ({ children }) => {
   // ✅ Login
   const login = async (email, password) => {
     try {
+      setLoading(true);
       const res = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -54,12 +52,15 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (err) {
       return { success: false, message: err.message };
+    } finally {
+      setLoading(false);
     }
   };
 
   // ✅ Signup
   const signup = async (name, email, password) => {
     try {
+      setLoading(true);
       const res = await fetch('http://localhost:5000/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -76,6 +77,8 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (err) {
       return { success: false, message: err.message };
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -85,7 +88,6 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('user');
   };
 
-  // ✅ Export context
   return (
     <AuthContext.Provider
       value={{
