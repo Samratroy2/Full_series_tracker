@@ -82,3 +82,11 @@
 .forgot-text a:hover {
   text-decoration: underline;
 }
+
+.guest{
+  margin-top: 9px !important;
+  color: #007bff !important;
+  background: none !important;
+  border: none !important;
+  cursor: pointer !important;
+}

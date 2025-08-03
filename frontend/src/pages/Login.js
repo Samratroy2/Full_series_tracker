@@ -1,28 +1,32 @@
 // src/pages/Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext'; // ✅
-import './Login.css';
-
+import './Login.css'
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const { login, continueAsGuest } = useAuth(); // ✅ use context functions
 
   const handleLogin = async () => {
-    const res = await login(email, password); // ✅ login from context
-    if (res.success) {
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+      
       alert('✅ Login successful');
-      navigate('/dashboard');
-    } else {
-      alert(`❌ ${res.message}`);
+      navigate('/dashboard', { state: { user: data.user } });
+    } catch (err) {
+      alert(`❌ ${err.message}`);
     }
   };
 
   const handleGuest = () => {
-    continueAsGuest(); // ✅ persist guest user
-    navigate('/dashboard');
+    navigate('/dashboard', { state: { guest: true } });
   };
 
   const handleForgotPassword = () => {
@@ -46,11 +50,8 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button onClick={handleLogin}>Login</button>
-        <button type="button" onClick={handleGuest}>Continue as Guest</button>
-        <p
-          style={{ marginTop: '10px', cursor: 'pointer', color: 'blue' }}
-          onClick={handleForgotPassword}
-        >
+        <button type="button" className="guest" onClick={handleGuest}>Continue as Guest</button>
+        <p style={{ marginTop: '10px', cursor: 'pointer', color: 'blue' }} onClick={handleForgotPassword}>
           Forgot Password?
         </p>
       </form>
