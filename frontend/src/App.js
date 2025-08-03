@@ -1,4 +1,5 @@
 // frontend/src/App.js
+
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 
@@ -10,6 +11,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ForgotPassword from './pages/ForgotPassword';
 import VerifyOtp from './pages/VerifyOtp';
 import ResetPassword from './pages/ResetPassword';
+import FilterPage from './pages/FilterPage';
 
 import Home from './pages/Home';
 import Watchlist from './pages/Watchlist';
@@ -34,12 +36,11 @@ const AppLayout = () => {
   const location = useLocation();
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const { darkMode, toggleTheme } = useTheme();
-  const { user, loading, login } = useAuth();
+  const { user, loading } = useAuth();
 
   if (loading) {
     return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading...</div>;
   }
-
 
   const noSidebarRoutes = ['/login', '/register', '/forgot-password', '/verify-otp', '/reset-password'];
   const showSidebar = sidebarVisible && !noSidebarRoutes.includes(location.pathname);
@@ -48,8 +49,8 @@ const AppLayout = () => {
     flex: 1,
     padding: '1rem',
     position: 'relative',
-    backgroundColor: darkMode ? '#121212' : '#ffffff',
-    color: darkMode ? '#e0e0e0' : '#000000',
+    backgroundColor: darkMode ? '#000000' : '#ffffff',
+    color: darkMode ? '#F14A00' : '#000000',
     minHeight: '100vh',
     transition: 'all 0.3s ease',
   };
@@ -62,7 +63,7 @@ const AppLayout = () => {
       style={{
         display: 'flex',
         flexDirection: 'row',
-        backgroundColor: darkMode ? '#000' : '#f5f5f5',
+        backgroundColor: darkMode ? '#000000' : '#f5f5f5',
         transition: 'background-color 0.3s ease',
       }}
     >
@@ -78,14 +79,18 @@ const AppLayout = () => {
             right: '10px',
             padding: '0.5rem 1rem',
             fontSize: '0.9rem',
-            borderRadius: '5px',
-            backgroundColor: darkMode ? '#444' : '#ccc',
+            borderRadius: '8px',
+            background: darkMode ? '#500073' : '#cccccc',
+            color: darkMode ? '#ffffff' : '#000000',
             border: 'none',
             cursor: 'pointer',
             zIndex: 10,
+            boxShadow: darkMode
+              ? '0 0 10px #4B4376'
+              : '0 0 8px rgba(0, 0, 0, 0.1)',
           }}
         >
-          {darkMode ? '☀️' : '🌙'}
+          {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
         </button>
 
         <Routes>
@@ -109,6 +114,7 @@ const AppLayout = () => {
           <Route path="/clubs" element={isAuthenticated ? <ClubList /> : <Navigate to="/login" />} />
           <Route path="/clubs/create" element={isAuthenticated ? <CreateClub /> : <Navigate to="/login" />} />
           <Route path="/club/:id" element={isAuthenticated ? <ClubPage /> : <Navigate to="/login" />} />
+          <Route path="/filter" element={<FilterPage />} />
         </Routes>
       </div>
     </div>

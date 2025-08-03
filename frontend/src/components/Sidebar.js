@@ -14,6 +14,8 @@ import {
   LogOut,
   Menu,
   X,
+  Search,
+  Filter,
 } from 'lucide-react';
 
 import './Sidebar.css';
@@ -51,6 +53,8 @@ const Sidebar = () => {
     { name: 'Dropped', path: '/watchlist/dropped', icon: <XCircle size={20} />, title: 'Dropped' },
     { name: 'Plan to Watch', path: '/watchlist/plan-to-watch', icon: <Clock size={20} />, title: 'Plan to Watch' },
     { name: 'Clubs', path: '/clubs', icon: <Users size={20} />, title: 'Clubs' },
+    { name: 'Search', path: '/filter?search=true', icon: <Search size={20} />, title: 'Search Anime' },
+    { name: 'Filter', path: '/filter?filter=true', icon: <Filter size={20} />, title: 'Filter by Genre' },
     { name: 'Admin Panel', path: '/admin', icon: <Shield size={20} />, title: 'Admin Panel' },
   ];
 
