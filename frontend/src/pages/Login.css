@@ -1,27 +1,41 @@
+/* Full-screen flex wrapper for vertical + horizontal centering */
+.auth-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Full viewport height */
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Main Login Container */
 .login-container {
   width: 100%;
   max-width: 400px;
-  margin: 80px auto;
   padding: 40px;
   background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
   text-align: center;
   font-family: 'Segoe UI', sans-serif;
+  box-sizing: border-box;
 }
 
-.login-form h2 {
-  margin-bottom: 25px;
-  color: #333;
-  font-size: 28px;
-}
-
+/* Login Form */
 .login-form {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
+/* Heading */
+.login-form h2 {
+  margin-bottom: 25px;
+  color: #333;
+  font-size: 28px;
+}
+
+/* Input Fields */
 .login-form input {
   padding: 12px;
   border: 1px solid #ccc;
@@ -35,6 +49,7 @@
   border-color: #007bff;
 }
 
+/* Submit Button */
 .login-form button {
   background-color: #007bff;
   color: white;
@@ -50,43 +65,57 @@
   background-color: #0056b3;
 }
 
-.login-form p {
-  margin-top: 20px;
-  font-size: 14px;
-  color: #666;
-}
-
-.login-form a {
+/* Continue as Guest Button */
+.guest {
+  margin-top: 12px;
+  background: transparent;
+  border: none;
   color: #007bff;
-  text-decoration: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: text-decoration 0.2s;
 }
 
-.login-form a:hover {
+.guest:hover {
   text-decoration: underline;
 }
+
+/* Additional Links */
 .login-links {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
+  font-size: 14px;
+  color: #666;
   text-align: center;
 }
 
-.register-text,
-.forgot-text {
+.login-links p {
   margin: 5px 0;
-}
-
-.forgot-text a {
+  cursor: pointer;
   color: #007bff;
-  text-decoration: none;
+  transition: text-decoration 0.2s;
 }
 
-.forgot-text a:hover {
+.login-links p:hover {
   text-decoration: underline;
 }
 
-.guest{
-  margin-top: 9px !important;
-  color: #007bff !important;
-  background: none !important;
-  border: none !important;
-  cursor: pointer !important;
+/* Responsive for Mobile */
+@media (max-width: 480px) {
+  .login-container {
+    padding: 30px 20px;
+  }
+
+  .login-form h2 {
+    font-size: 24px;
+  }
+
+  .login-form input,
+  .login-form button {
+    font-size: 14px;
+  }
+
+  .guest {
+    font-size: 13px;
+  }
 }

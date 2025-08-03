@@ -35,35 +35,36 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container">
-      <form className="login-form" onSubmit={(e) => e.preventDefault()}>
-        <h2>Login</h2>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button onClick={handleLogin}>Login</button>
-        <button type="button" className="guest" onClick={handleGuest}>Continue as Guest</button>
+    <div className="auth-wrapper">
+      <div className="login-container">
+        <form className="login-form" onSubmit={(e) => e.preventDefault()}>
+          <h2>Login</h2>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button onClick={handleLogin}>Login</button>
+          <button type="button" className="guest" onClick={handleGuest}>
+            Continue as Guest
+          </button>
 
-        <div className="login-links">
-          <p onClick={handleForgotPassword} style={{ cursor: 'pointer', color: 'blue' }}>
-            Forgot Password?
-          </p>
-          <p onClick={handleRegister} style={{ cursor: 'pointer', color: 'blue' }}>
-            New here? Register
-          </p>
-        </div>
-      </form>
+          <div className="login-links">
+            <p onClick={handleForgotPassword}>Forgot Password?</p>
+            <p onClick={handleRegister}>New here? Register</p>
+          </div>
+        </form>
+      </div>
     </div>
   );
+
 };
 
 export default Login;

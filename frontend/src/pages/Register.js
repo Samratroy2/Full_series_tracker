@@ -39,36 +39,38 @@ const Register = () => {
   };
 
   return (
-    <div className="auth-container">
-      <h2>Register</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Name"
-          required
-          value={name}
-          onChange={e => setName(e.target.value)}
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          required
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          required
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-        />
-        <button type="submit" disabled={loading}>
-          {loading ? 'Registering...' : 'Register'}
-        </button>
-      </form>
-      <p>Already registered? <Link to="/login">Login here</Link></p>
+    <div className="auth-wrapper">
+      <div className="auth-container">
+        <h2>Register</h2>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Name"
+            required
+            value={name}
+            onChange={e => setName(e.target.value)}
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            required
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            required
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+          />
+          <button type="submit" disabled={loading}>
+            {loading ? 'Registering...' : 'Register'}
+          </button>
+        </form>
+        <p>Already registered? <Link to="/login">Login here</Link></p>
+      </div>
     </div>
   );
 };
