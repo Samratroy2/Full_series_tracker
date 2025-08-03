@@ -8,6 +8,10 @@ import { ThemeProvider, useTheme } from './ThemeContext';
 import { ClubProvider } from './contexts/ClubContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 
+import ForgotPassword from './pages/ForgotPassword';
+import VerifyOtp from './pages/VerifyOtp';
+import ResetPassword from './pages/ResetPassword';
+
 import Home from './pages/Home';
 import Watchlist from './pages/Watchlist';
 import Watching from './pages/Watching';
@@ -32,7 +36,7 @@ const AppLayout = () => {
   const { darkMode, toggleTheme } = useTheme();
   const { user } = useAuth();
 
-  const noSidebarRoutes = ['/login', '/register'];
+  const noSidebarRoutes = ['/login', '/register', '/forgot-password', '/verify-otp', '/reset-password'];
 
   const showSidebar = sidebarVisible && !noSidebarRoutes.includes(location.pathname);
 
@@ -84,6 +88,13 @@ const AppLayout = () => {
           <Route path="/" element={<Home />} />
           <Route path="/anime/:id" element={<AnimeDetails />} />
 
+          {/* Public Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/verify-otp" element={<VerifyOtp />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+
           {/* Protected Routes */}
           {user ? (
             <>
@@ -105,11 +116,8 @@ const AppLayout = () => {
               <Route path="/admin" element={<Navigate to="/login" />} />
             </>
           )}
-
-          {/* Auth Pages */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
         </Routes>
+
       </div>
     </div>
   );

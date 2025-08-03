@@ -6,28 +6,14 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // New loading state
-
-  const [users, setUsers] = useState(() => {
-    const stored = localStorage.getItem('users');
-    return stored
-      ? JSON.parse(stored)
-      : [{ name: 'Test User', email: 'test@example.com', password: '123456' }];
-  });
+  const [loading, setLoading] = useState(true);
 
   // Load user from localStorage on initial mount
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false); // Done loading
+    if (storedUser) setUser(JSON.parse(storedUser));
+    setLoading(false);
   }, []);
-
-  // Persist users list on change
-  useEffect(() => {
-    localStorage.setItem('users', JSON.stringify(users));
-  }, [users]);
 
   // Persist user on change
   useEffect(() => {
@@ -38,35 +24,79 @@ export const AuthProvider = ({ children }) => {
     }
   }, [user]);
 
-  const login = (email, password) => {
-    const existingUser = users.find(
-      u => u.email === email && u.password === password
-    );
-    if (existingUser) {
-      const loggedInUser = { name: existingUser.name, email: existingUser.email };
-      setUser(loggedInUser);
-      localStorage.setItem('user', JSON.stringify(loggedInUser));
-      return true;
-    }
-    return false;
+  // ✅ Continue as Guest
+  const continueAsGuest = () => {
+    const guestUser = {
+      name: 'Guest',
+      email: 'guest@animeclub.com',
+      role: 'guest',
+    };
+    setUser(guestUser);
+    localStorage.setItem('user', JSON.stringify(guestUser));
   };
 
+  // ✅ Login
+  const login = async (email, password) => {
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || 'Login failed');
+      }
+
+      const data = await res.json();
+      setUser(data.user);
+      return { success: true };
+    } catch (err) {
+      return { success: false, message: err.message };
+    }
+  };
+
+  // ✅ Signup
+  const signup = async (name, email, password) => {
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || 'Signup failed');
+      }
+
+      const data = await res.json();
+      setUser(data.user);
+      return { success: true };
+    } catch (err) {
+      return { success: false, message: err.message };
+    }
+  };
+
+  // ✅ Logout
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
   };
 
-  const signup = (name, email, password) => {
-    const exists = users.find(u => u.email === email);
-    if (exists) return false;
-
-    const newUser = { name, email, password };
-    setUsers(prev => [...prev, newUser]);
-    return true;
-  };
-
+  // ✅ Export context
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, signup }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        logout,
+        signup,
+        continueAsGuest,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

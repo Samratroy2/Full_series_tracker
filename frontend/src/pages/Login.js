@@ -1,65 +1,57 @@
 // src/pages/Login.js
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext'; // ✅
 import './Login.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const { login, continueAsGuest } = useAuth(); // ✅ use context functions
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || 'Login failed');
-      }
-
-      const data = await res.json();
-      localStorage.setItem('user', JSON.stringify(data.user));
-      sessionStorage.setItem('justLoggedIn', 'true');
-      navigate('/');
-    } catch (err) {
-      alert(err.message);
-    } finally {
-      setLoading(false);
+  const handleLogin = async () => {
+    const res = await login(email, password); // ✅ login from context
+    if (res.success) {
+      alert('✅ Login successful');
+      navigate('/dashboard');
+    } else {
+      alert(`❌ ${res.message}`);
     }
+  };
+
+  const handleGuest = () => {
+    continueAsGuest(); // ✅ persist guest user
+    navigate('/dashboard');
+  };
+
+  const handleForgotPassword = () => {
+    navigate('/forgot-password');
   };
 
   return (
     <div className="login-container">
-      <form className="login-form" onSubmit={handleLogin}>
+      <form className="login-form" onSubmit={(e) => e.preventDefault()}>
         <h2>Login</h2>
         <input
           type="email"
           placeholder="Email"
           value={email}
-          required
           onChange={(e) => setEmail(e.target.value)}
         />
         <input
           type="password"
           placeholder="Password"
           value={password}
-          required
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit" disabled={loading}>
-          {loading ? 'Logging in...' : 'Login'}
-        </button>
-
-        <p className="register-text">
-          New user? <Link to="/register">Register here</Link>
+        <button onClick={handleLogin}>Login</button>
+        <button type="button" onClick={handleGuest}>Continue as Guest</button>
+        <p
+          style={{ marginTop: '10px', cursor: 'pointer', color: 'blue' }}
+          onClick={handleForgotPassword}
+        >
+          Forgot Password?
         </p>
       </form>
     </div>

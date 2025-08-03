@@ -64,3 +64,21 @@
 .login-form a:hover {
   text-decoration: underline;
 }
+.login-links {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.register-text,
+.forgot-text {
+  margin: 5px 0;
+}
+
+.forgot-text a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.forgot-text a:hover {
+  text-decoration: underline;
+}
