@@ -1,10 +1,11 @@
-// backend\routes\authRoutes.js
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
+const nodemailer = require('nodemailer');
+require('dotenv').config();
 
-// ✅ Send OTP for Forgot Password
+// 🔒 Send OTP for Forgot Password
 router.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
 
@@ -19,11 +20,32 @@ router.post('/forgot-password', async (req, res) => {
     user.otpExpires = otpExpires;
     await user.save();
 
-    console.log(`🔐 OTP for ${email}: ${otp}`); // In production, send via email
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
 
-    res.json({ message: 'OTP sent to email (check console in dev)' });
+    const mailOptions = {
+      from: `"Anime Club" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: '🔐 OTP for Password Reset',
+      html: `
+        <h3>Hello ${user.name || 'User'},</h3>
+        <p>Your OTP for password reset is:</p>
+        <h2>${otp}</h2>
+        <p>This OTP is valid for 10 minutes.</p>
+        <p>If you did not request this, please ignore this email.</p>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.json({ message: 'OTP sent to email successfully' });
   } catch (err) {
-    res.status(500).json({ message: 'Error sending OTP', error: err.message });
+    console.error('❌ Email Error:', err);
+    res.status(500).json({ message: 'Failed to send OTP email', error: err.message });
   }
 });
 
@@ -45,7 +67,6 @@ router.post('/verify-otp', async (req, res) => {
 
 // ✅ Reset Password
 router.post('/reset-password', async (req, res) => {
-  console.log('📩 Incoming Reset Payload:', req.body);
   const { email, otp, newPassword } = req.body;
 
   if (!email || !otp || !newPassword) {
@@ -54,16 +75,11 @@ router.post('/reset-password', async (req, res) => {
 
   try {
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    if (user.otp !== otp || user.otpExpires < new Date()) {
+    if (!user || user.otp !== otp || user.otpExpires < new Date()) {
       return res.status(400).json({ message: 'Invalid or expired OTP' });
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
+    user.password = await bcrypt.hash(newPassword, 10);
     user.otp = null;
     user.otpExpires = null;
 
@@ -110,11 +126,10 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// ✅ Get all users (only for admin)
+// ✅ Get All Users (Admin only)
 router.get('/users', async (req, res) => {
   const { email } = req.query;
 
-  // Only admin can access user list
   if (email !== 'trysamrat1@gmail.com') {
     return res.status(403).json({ message: 'Unauthorized access' });
   }
@@ -127,7 +142,7 @@ router.get('/users', async (req, res) => {
   }
 });
 
-// ✅ Delete a user (admin only)
+// ✅ Delete User (Admin only)
 router.delete('/users/:id', async (req, res) => {
   const { adminEmail } = req.query;
 
@@ -137,19 +152,12 @@ router.delete('/users/:id', async (req, res) => {
 
   try {
     const userId = req.params.id;
-
-    // 🔁 Optional: remove related data (e.g. Watchlists, Clubs, etc.)
-    // await Watchlist.deleteMany({ userId });
-
     const deleted = await User.findByIdAndDelete(userId);
 
-    if (!deleted) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+    if (!deleted) return res.status(404).json({ message: 'User not found' });
 
     res.json({ message: 'User deleted successfully' });
   } catch (err) {
-    console.error('❌ Delete failed:', err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 });

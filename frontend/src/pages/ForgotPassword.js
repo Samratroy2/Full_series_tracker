@@ -1,7 +1,7 @@
-// frontend\src\pages\ForgotPassword.js
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './ForgotPassword.css'
+import { useTheme } from '../ThemeContext';
+import './ForgotPassword.css';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -9,10 +9,29 @@ const ForgotPassword = () => {
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+
+  const otpRef = useRef(null);
   const navigate = useNavigate();
+  const { darkMode } = useTheme();
+
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const timer = setTimeout(() => setResendTimer((prev) => prev - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendTimer]);
+
+  const validateEmail = (email) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
   const handleSendOtp = async () => {
-    if (!email) return alert('Please enter your email');
+    setError('');
+    setMessage('');
+
+    if (!validateEmail(email)) return setError('Please enter a valid email');
     setLoading(true);
 
     try {
@@ -25,19 +44,30 @@ const ForgotPassword = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to send OTP');
 
-      alert('OTP sent to your email');
+      setMessage('✅ OTP sent! Check your inbox or spam folder.');
       setOtpSent(true);
+      setResendTimer(30);
+
+      // Focus OTP input after sending
+      setTimeout(() => otpRef.current?.focus(), 100);
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      setError(`❌ ${err.message}`);
     } finally {
       setLoading(false);
     }
   };
 
   const handleResetPassword = async () => {
-    if (!otp || !newPassword) return alert('Please fill all fields');
-    setLoading(true);
+    setError('');
+    setMessage('');
 
+    if (!otp.trim() || !newPassword.trim())
+      return setError('Please fill in all fields');
+
+    if (newPassword.length < 6)
+      return setError('Password must be at least 6 characters');
+
+    setLoading(true);
     try {
       const res = await fetch('http://localhost:5000/api/auth/reset-password', {
         method: 'POST',
@@ -48,41 +78,47 @@ const ForgotPassword = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to reset password');
 
-      alert('Password reset successful');
-      navigate('/login'); // ✅ Optional: redirect to login
+      setMessage('🎉 Password reset successful! Redirecting...');
+      setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      setError(`❌ ${err.message}`);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="auth-wrapper">
+    <div className={`auth-wrapper ${darkMode ? 'dark' : ''}`}>
       <div className="auth-container">
-        <form className="auth-form" onSubmit={(e) => e.preventDefault()}>
+        <form
+          className="auth-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            otpSent ? handleResetPassword() : handleSendOtp();
+          }}
+        >
           <h2>Forgot Password</h2>
+
+          {error && <p className="error-text">{error}</p>}
+          {message && <p className="success-text">{message}</p>}
 
           <input
             type="email"
             placeholder="Enter your email"
             value={email}
-            disabled={otpSent}
             onChange={(e) => setEmail(e.target.value)}
+            disabled={otpSent}
             required
           />
 
-          {!otpSent ? (
-            <button onClick={handleSendOtp} disabled={loading}>
-              {loading ? 'Sending OTP...' : 'Send OTP'}
-            </button>
-          ) : (
+          {otpSent && (
             <>
               <input
                 type="text"
                 placeholder="Enter OTP"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
+                ref={otpRef}
                 required
               />
               <input
@@ -92,16 +128,35 @@ const ForgotPassword = () => {
                 onChange={(e) => setNewPassword(e.target.value)}
                 required
               />
-              <button onClick={handleResetPassword} disabled={loading}>
-                {loading ? 'Resetting...' : 'Reset Password'}
-              </button>
             </>
+          )}
+
+          <button type="submit" disabled={loading}>
+            {loading
+              ? otpSent
+                ? 'Resetting...'
+                : 'Sending OTP...'
+              : otpSent
+              ? 'Reset Password'
+              : 'Send OTP'}
+          </button>
+
+          {otpSent && (
+            <button
+              type="button"
+              onClick={handleSendOtp}
+              disabled={resendTimer > 0}
+              className="resend-btn"
+            >
+              {resendTimer > 0
+                ? `Resend OTP in ${resendTimer}s`
+                : 'Resend OTP'}
+            </button>
           )}
         </form>
       </div>
     </div>
   );
-
 };
 
 export default ForgotPassword;
