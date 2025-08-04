@@ -1,7 +1,7 @@
 /* Basic sidebar styles */
 .sidebar {
   height: 100vh;
-  background-color: #1e1e2f;
+  background-color: #ff4c4c;
   color: white;
   transition: width 0.3s ease;
   overflow: hidden;
@@ -15,7 +15,7 @@
 
 /* Expanded and collapsed widths */
 .sidebar.expanded {
-  width: 220px;
+  width: 170px;
 }
 
 .sidebar.collapsed {

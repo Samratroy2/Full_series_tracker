@@ -40,20 +40,19 @@ const AnimeSection = ({ title, data }) => {
     <div className="section-block">
       <h2 className="section-title">{title}</h2>
       <div className="scroll-container">
-        {data.map((anime) => (
-          <div className="anime-card" key={anime._id}>
-            <img
-              src={anime.image || anime.images?.jpg?.image_url}
-              alt={anime.title}
-              className="anime-image"
-            />
-            <div className="anime-details">
-              <h3>{anime.title}</h3>
-              <p><strong>Episodes:</strong> {anime.episodes}</p>
-              <p><strong>Rating:</strong> {anime.score || 'N/A'}</p>
+        {data.map((anime) => {
+          const imageUrl = anime.image || anime.images?.jpg?.image_url || 'https://via.placeholder.com/220x320?text=No+Image';
+          return (
+            <div className="anime-card" key={anime._id}>
+              <img className="anime-image" src={imageUrl} alt={anime.title} />
+              <div className="anime-info">
+                <h3>{anime.title}</h3>
+                <p>Episodes: {anime.episodes}</p>
+                <p>Rating: {anime.score || 'N/A'}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
