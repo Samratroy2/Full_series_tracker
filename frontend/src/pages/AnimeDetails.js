@@ -6,6 +6,7 @@ import './AnimeDetails.css';
 const AnimeDetails = () => {
   const { id } = useParams();
   const [anime, setAnime] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchAnime = async () => {
@@ -15,23 +16,35 @@ const AnimeDetails = () => {
         setAnime(data);
       } catch (err) {
         console.error('Error fetching anime:', err);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchAnime();
   }, [id]);
 
-  if (!anime) return <div className="details-loading">Loading...</div>;
+  if (loading) {
+    return <div className="details-loading">Loading anime details...</div>;
+  }
+
+  if (!anime) {
+    return <div className="details-error">Failed to load anime data.</div>;
+  }
 
   return (
     <div className="anime-details">
-      <img src={anime.image} alt={anime.title} className="anime-image" />
+      <img
+        src={anime.image || '/default-poster.jpg'}
+        alt={anime.title}
+        className="anime-image"
+      />
       <div className="anime-info">
-        <h2>{anime.title}</h2>
-        <p><strong>Episodes:</strong> {anime.totalEpisodes}</p>
-        <p><strong>Description:</strong> {anime.description}</p>
-        <p><strong>Genres:</strong> {anime.genres.join(', ')}</p>
-        <p><strong>Status:</strong> {anime.status || 'Not Started'}</p>
+        <h2>{anime.title || 'Untitled'}</h2>
+        <p><strong>Episodes:</strong> {anime.totalEpisodes || 'N/A'}</p>
+        <p><strong>Description:</strong> {anime.description || 'No description available.'}</p>
+        <p><strong>Genres:</strong> {anime.genres?.join(', ') || 'Unknown'}</p>
+        <p><strong>Status:</strong> {anime.status || 'Unknown'}</p>
       </div>
     </div>
   );

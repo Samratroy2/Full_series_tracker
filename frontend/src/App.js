@@ -1,6 +1,4 @@
-// frontend/src/App.js
-
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 
 import Sidebar from './components/Sidebar';
@@ -29,9 +27,9 @@ import AdminRoute from './components/AdminRoute';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Search from './pages/Search';
 
 import './App.css';
-import Search from './pages/Search';
 
 const AppLayout = () => {
   const location = useLocation();
@@ -41,69 +39,37 @@ const AppLayout = () => {
   const noSidebarRoutes = ['/login', '/register', '/forgot-password', '/verify-otp', '/reset-password'];
   const showSidebar = !noSidebarRoutes.includes(location.pathname);
 
+  React.useEffect(() => {
+    document.body.classList.toggle('dark-theme', darkMode);
+  }, [darkMode]);
+
   if (loading) {
-    return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading...</div>;
+    return <div className="loading-screen">Loading...</div>;
   }
 
   const isAuthenticated = !!user;
 
   return (
-    <div
-      className="app-container"
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-        backgroundColor: darkMode ? '#000000' : '#f5f5f5',
-        transition: 'background-color 0.3s ease',
-        minHeight: '100vh',
-      }}
-    >
+    <div className="app-container">
       {showSidebar && <Sidebar />}
 
-      <div
-        style={{
-          flex: 1,
-          padding: '1rem',
-          position: 'relative',
-          backgroundColor: darkMode ? '#000000' : '#ffffff',
-          color: darkMode ? '#F14A00' : '#000000',
-          transition: 'all 0.3s ease',
-        }}
-      >
-        {/* Theme Toggle Button */}
-        <button
-          className="theme-toggle"
-          onClick={toggleTheme}
-          style={{
-            position: 'absolute',
-            top: '10px',
-            right: '10px',
-            padding: '0.5rem 1rem',
-            fontSize: '0.9rem',
-            borderRadius: '8px',
-            background: darkMode ? '#500073' : '#cccccc',
-            color: darkMode ? '#ffffff' : '#000000',
-            border: 'none',
-            cursor: 'pointer',
-            zIndex: 10,
-            boxShadow: darkMode ? '0 0 10px #4B4376' : '0 0 8px rgba(0, 0, 0, 0.1)',
-          }}
-        >
+      <div className="main-content">
+        <button className="theme-toggle" onClick={toggleTheme}>
           {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
         </button>
 
         <Routes>
-          {/* Auth Routes */}
+          {/* Auth */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
-          {/* Public/Shared Route */}
+          {/* Public */}
           <Route path="/filter" element={<FilterPage />} />
 
-          {/* Protected Routes */}
+          {/* Protected */}
           <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/login" />} />
           <Route path="/anime/:id" element={isAuthenticated ? <AnimeDetails /> : <Navigate to="/login" />} />
           <Route path="/watchlist" element={isAuthenticated ? <Watchlist /> : <Navigate to="/login" />} />
@@ -117,7 +83,7 @@ const AppLayout = () => {
           <Route path="/club/:id" element={isAuthenticated ? <ClubPage /> : <Navigate to="/login" />} />
           <Route path="/search" element={isAuthenticated ? <Search /> : <Navigate to="/login" />} />
 
-          {/* Admin Route */}
+          {/* Admin */}
           <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
         </Routes>
       </div>

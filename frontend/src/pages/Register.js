@@ -1,10 +1,12 @@
 // src/pages/Register.js
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTheme } from '../ThemeContext';
 import './Register.css';
 
 const Register = () => {
   const navigate = useNavigate();
+  const { darkMode } = useTheme();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -39,10 +41,12 @@ const Register = () => {
   };
 
   return (
-    <div className="auth-wrapper">
+    <div className={`auth-wrapper ${darkMode ? 'dark' : ''}`}>
       <div className="auth-container">
         <h2>Register</h2>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+
+        {error && <p className="error-text" role="alert">{error}</p>}
+
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -50,6 +54,8 @@ const Register = () => {
             required
             value={name}
             onChange={e => setName(e.target.value)}
+            autoComplete="name"
+            aria-label="Name"
           />
           <input
             type="email"
@@ -57,6 +63,8 @@ const Register = () => {
             required
             value={email}
             onChange={e => setEmail(e.target.value)}
+            autoComplete="email"
+            aria-label="Email"
           />
           <input
             type="password"
@@ -64,11 +72,15 @@ const Register = () => {
             required
             value={password}
             onChange={e => setPassword(e.target.value)}
+            autoComplete="new-password"
+            aria-label="Password"
           />
+
           <button type="submit" disabled={loading}>
             {loading ? 'Registering...' : 'Register'}
           </button>
         </form>
+
         <p>Already registered? <Link to="/login">Login here</Link></p>
       </div>
     </div>
