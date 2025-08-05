@@ -1,4 +1,4 @@
-
+// backend\routes\users.js
 
 let reminders = [
   { userId: 1, showId: 1, datetime: '2025-05-01T20:00:00', note: 'New episode release!' }
@@ -18,7 +18,6 @@ app.post('/api/users/:userId/reminders', (req, res) => {
   res.json(newReminder);
 });
 
-
 let userWatchlists = {
   1: [1, 2],
   2: [3]
@@ -32,5 +31,5 @@ app.get('/api/users/:userId/watchlist', (req, res) => {
 
 app.get('/api/share/:userId', (req, res) => {
   const { userId } = req.params;
-  res.json({ link: \`http://localhost:3000/shared/\${userId}\` });
+  res.json({ link: `http://localhost:3000/shared/${userId}` });
 });
