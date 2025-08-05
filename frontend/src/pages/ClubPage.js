@@ -1,14 +1,15 @@
-// frontend\src\pages\ClubPage.js
+//frontend\src\pages\ClubPage.js
+
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useClubs } from '../contexts/ClubContext';
-import './ClubList.css'; // Same CSS
+import './ClubList.css';
 
 const ClubPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { clubs, addMessage, addPoll, votePollOption } = useClubs();
-  const club = clubs.find(c => c.id === id);
+  const club = clubs.find(c => c._id === id);
 
   const [messageText, setMessageText] = useState('');
   const [pollQuestion, setPollQuestion] = useState('');
@@ -19,7 +20,7 @@ const ClubPage = () => {
 
   const handleSendMessage = () => {
     if (messageText.trim()) {
-      addMessage(id, 'You', messageText.trim());
+      addMessage(club._id, 'You', messageText.trim());
       setMessageText('');
     }
   };
@@ -30,15 +31,15 @@ const ClubPage = () => {
         text: opt.trim(),
         votes: 0,
       }));
-      addPoll(id, pollQuestion.trim(), optionsArray);
+      addPoll(club._id, pollQuestion.trim(), optionsArray);
       setPollQuestion('');
       setPollOptions('');
     }
   };
 
   const handleVote = (pollId, optionIndex) => {
-    if (votedPolls[pollId]) return; // Already voted
-    votePollOption(id, pollId, optionIndex);
+    if (votedPolls[pollId]) return;
+    votePollOption(club._id, pollId, optionIndex);
     setVotedPolls(prev => ({ ...prev, [pollId]: optionIndex }));
   };
 
@@ -48,10 +49,10 @@ const ClubPage = () => {
 
       <h2>{club.name}</h2>
 
-      {/* Members Section */}
+      {/* Members */}
       <div className="club-section">
         <h3>Members</h3>
-        {club.members.length > 0 ? (
+        {club.members && club.members.length > 0 ? (
           <ul>
             {club.members.map((member, idx) => (
               <li key={idx}>{member}</li>
@@ -62,22 +63,22 @@ const ClubPage = () => {
         )}
       </div>
 
-      {/* Polls Section */}
+      {/* Polls */}
       <div className="club-section">
         <h3>Polls</h3>
         {club.polls && club.polls.length > 0 ? (
-          club.polls.map(poll => (
-            <div key={poll.id} className="poll-box">
+          club.polls.map((poll) => (
+            <div key={poll._id} className="poll-box">
               <strong>{poll.question}</strong>
               <ul>
                 {poll.options.map((option, idx) => (
                   <li
                     key={idx}
                     className="poll-option"
-                    onClick={() => handleVote(poll.id, idx)}
+                    onClick={() => handleVote(poll._id, idx)}
                     style={{
-                      cursor: votedPolls[poll.id] != null ? 'not-allowed' : 'pointer',
-                      backgroundColor: votedPolls[poll.id] === idx ? '#d1e7dd' : '#fff',
+                      cursor: votedPolls[poll._id] != null ? 'not-allowed' : 'pointer',
+                      backgroundColor: votedPolls[poll._id] === idx ? '#d1e7dd' : '#fff',
                       border: '1px solid #ccc',
                       padding: '8px',
                       margin: '5px 0',
@@ -88,7 +89,7 @@ const ClubPage = () => {
                   </li>
                 ))}
               </ul>
-              {votedPolls[poll.id] != null && (
+              {votedPolls[poll._id] != null && (
                 <p style={{ color: 'green', marginTop: '5px' }}>✅ You have voted!</p>
               )}
             </div>
@@ -97,7 +98,7 @@ const ClubPage = () => {
           <p>No polls created yet.</p>
         )}
 
-        {/* Create New Poll */}
+        {/* Create Poll */}
         <div className="create-poll">
           <input
             type="text"
@@ -115,7 +116,7 @@ const ClubPage = () => {
         </div>
       </div>
 
-      {/* Chat Section */}
+      {/* Messages */}
       <div className="club-section">
         <h3>Chat</h3>
         <div className="chat-box">
@@ -130,7 +131,7 @@ const ClubPage = () => {
           )}
         </div>
 
-        {/* Send New Message */}
+        {/* Send Message */}
         <div className="chat-input">
           <input
             type="text"

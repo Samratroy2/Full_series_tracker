@@ -1,35 +1,52 @@
+//backend\index.js
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
 const animeRoutes = require('./routes/anime');
 const authRoutes = require('./routes/authRoutes');
+const clubRoutes = require('./routes/clubs');
+const messageRoutes = require('./routes/messageRoutes');
+const pollRoutes = require('./routes/polls');
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/animeClubApp';
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// Routes
+// API Routes
 app.use('/api/anime', animeRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/clubs', clubRoutes);
+app.use('/api/messages', messageRoutes);
+app.use('/api/polls', pollRoutes);
 
 // Root route
 app.get('/', (req, res) => {
-  res.send('API is working');
+  res.send('✅ Anime Club API is running!');
 });
 
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/animeClubApp', {
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
+
+// Connect to MongoDB and start server
+mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
   .then(() => {
     console.log('✅ Connected to MongoDB');
-    app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running at http://localhost:${PORT}`);
+    });
   })
-  .catch(err => {
+  .catch((err) => {
     console.error('❌ MongoDB connection failed:', err.message);
+    process.exit(1);
   });

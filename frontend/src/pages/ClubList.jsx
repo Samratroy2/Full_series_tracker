@@ -1,11 +1,12 @@
-// frontend\src\pages\ClubList.jsx
+//frontend/src/pages/ClubList.jsx
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useClubs } from '../contexts/ClubContext';
 import './ClubList.css';
 
 const ClubList = () => {
-  const { clubs, createClub, deleteClub } = useClubs();
+  const { clubs, createClub, deleteClub, loading } = useClubs();
   const navigate = useNavigate();
   const [newClubName, setNewClubName] = useState('');
 
@@ -29,15 +30,30 @@ const ClubList = () => {
           />
           <button onClick={handleCreateClub}>Create</button>
         </div>
+
         <div className="club-list">
-          {clubs.map((club) => (
-            <div key={club.id} className="club-item">
-              <div className="club-name" onClick={() => navigate(`/club/${club.id}`)}>
-                {club.name}
+          {loading ? (
+            <p>Loading clubs...</p>
+          ) : clubs.length === 0 ? (
+            <p style={{ padding: '1rem' }}>No clubs created yet.</p>
+          ) : (
+            clubs.map((club) => (
+              <div key={club._id} className="club-item">
+                <div
+                  className="club-name"
+                  onClick={() => navigate(`/club/${club._id}`)}
+                >
+                  {club.name}
+                </div>
+                <button
+                  className="delete-btn"
+                  onClick={() => deleteClub(club._id)}
+                >
+                  ✖
+                </button>
               </div>
-              <button className="delete-btn" onClick={() => deleteClub(club.id)}>✖</button>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
 

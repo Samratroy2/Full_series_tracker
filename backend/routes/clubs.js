@@ -1,92 +1,56 @@
+//backend\routes\clubs.js
+
 const express = require('express');
 const router = express.Router();
+const Club = require('../models/Club');
 
-let clubs = [
-  {
-    id: 1,
-    name: 'Attack on Titan Fans',
-    members: ['testuser@example.com'],
-    discussions: [
-      { user: 'testuser@example.com', message: 'Who else cried at the ending?' }
-    ]
-  }
-];
-
-let polls = [
-  {
-    clubId: 1,
-    question: 'Best character in AOT?',
-    options: [
-      { text: 'Eren', votes: 3 },
-      { text: 'Levi', votes: 5 },
-      { text: 'Mikasa', votes: 2 }
-    ]
-  }
-];
-
-router.get('/', (req, res) => {
+// GET all clubs
+router.get('/', async (req, res) => {
+  const clubs = await Club.find();
   res.json(clubs);
 });
 
-router.post('/', (req, res) => {
-  const { name, user } = req.body;
-  const newClub = {
-    id: clubs.length + 1,
-    name,
-    members: [user],
-    discussions: []
-  };
-  clubs.push(newClub);
-  res.json(newClub);
+// Create a new club
+router.post('/', async (req, res) => {
+  const { name, createdBy, members } = req.body;
+  try {
+    const club = new Club({ name, createdBy, members });
+    await club.save();
+    res.status(201).json(club);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
-router.post('/:id/join', (req, res) => {
-  const { id } = req.params;
-  const { user } = req.body;
-  const club = clubs.find(c => c.id == id);
-  if (club && !club.members.includes(user)) {
-    club.members.push(user);
+// Delete a club (creator only)
+router.delete('/:id', async (req, res) => {
+  const { email } = req.body;
+  const club = await Club.findById(req.params.id);
+  if (!club) return res.status(404).json({ error: 'Club not found' });
+  if (club.createdBy !== email)
+    return res.status(403).json({ error: 'Only the creator can delete the club.' });
+  await club.deleteOne();
+  res.json({ message: 'Club deleted' });
+});
+
+// Join club
+router.post('/:id/join', async (req, res) => {
+  const { email } = req.body;
+  const club = await Club.findById(req.params.id);
+  if (!club.members.includes(email)) {
+    club.members.push(email);
+    await club.save();
   }
   res.json(club);
 });
 
-router.post('/:id/discuss', (req, res) => {
-  const { id } = req.params;
-  const { user, message } = req.body;
-  const club = clubs.find(c => c.id == id);
-  if (club) {
-    club.discussions.push({ user, message });
-  }
+// Post a message
+router.post('/:id/message', async (req, res) => {
+  const { user, text } = req.body;
+  const club = await Club.findById(req.params.id);
+  club.messages.push({ user, text });
+  await club.save();
   res.json(club);
-});
-
-router.get('/:id/polls', (req, res) => {
-  const { id } = req.params;
-  const clubPolls = polls.filter(p => p.clubId == id);
-  res.json(clubPolls);
-});
-
-router.post('/:id/polls', (req, res) => {
-  const { id } = req.params;
-  const { question, options } = req.body;
-  const newPoll = {
-    clubId: parseInt(id),
-    question,
-    options: options.map(text => ({ text, votes: 0 }))
-  };
-  polls.push(newPoll);
-  res.json(newPoll);
-});
-
-router.post('/:id/polls/vote', (req, res) => {
-  const { id } = req.params;
-  const { question, option } = req.body;
-  const poll = polls.find(p => p.clubId == id && p.question === question);
-  if (poll) {
-    const opt = poll.options.find(o => o.text === option);
-    if (opt) opt.votes += 1;
-  }
-  res.json(poll);
 });
 
 module.exports = router;
