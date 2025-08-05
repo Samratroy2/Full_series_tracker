@@ -77,7 +77,7 @@ const Sidebar = () => {
             />
           </div>
           {!loading && isOpen && (
-            <h2 className="sidebar-user-name">{user?.name || 'Guest'}</h2>
+            <h2 className="sidebar-user-name">{user?.userId || 'Guest'}</h2>
           )}
         </div>
       </div>
