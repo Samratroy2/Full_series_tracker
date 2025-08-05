@@ -14,18 +14,20 @@ import {
   LogOut,
   Menu,
   X,
+  UserCircle,
   Search,
   Filter,
 } from 'lucide-react';
 
 import './Sidebar.css';
+import defaultAvatar from '../assets/default-avatar.jpg';
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const { user, loading, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
 
   const toggleSidebar = () => setIsOpen(prev => !prev);
 
@@ -46,7 +48,12 @@ const Sidebar = () => {
     navigate('/login');
   };
 
+  const profileImageUrl = user?.profilePhoto
+  ? `http://localhost:5000/uploads/${encodeURIComponent(user.profilePhoto)}`
+  : defaultAvatar;
+
   const menuItems = [
+    { name: 'Profile', path: '/profile', icon: <UserCircle size={20} />, title: 'Edit Profile' },
     { name: 'Home', path: '/', icon: <Home size={20} />, title: 'Home' },
     { name: 'Watching', path: '/watchlist/watching', icon: <Eye size={20} />, title: 'Watching' },
     { name: 'Completed', path: '/watchlist/completed', icon: <CheckCircle size={20} />, title: 'Completed' },
@@ -54,7 +61,7 @@ const Sidebar = () => {
     { name: 'Dropped', path: '/watchlist/dropped', icon: <XCircle size={20} />, title: 'Dropped' },
     { name: 'Plan to Watch', path: '/watchlist/plan-to-watch', icon: <Clock size={20} />, title: 'Plan to Watch' },
     { name: 'Clubs', path: '/clubs', icon: <Users size={20} />, title: 'Clubs' },
-    { name: 'Search', path: '/search', icon: <Search size={20} />, title: 'Search Anime' },         // ✅ Updated path
+    { name: 'Search', path: '/search', icon: <Search size={20} />, title: 'Search Anime' },
     { name: 'Filter', path: '/filter?filter=true', icon: <Filter size={20} />, title: 'Filter by Genre' },
     { name: 'Admin Panel', path: '/admin', icon: <Shield size={20} />, title: 'Admin Panel' },
   ];
@@ -71,9 +78,9 @@ const Sidebar = () => {
         <div className={isOpen ? 'profile-wrapper' : 'profile-wrapper-collapsed'}>
           <div className="logo-circle">
             <img
-              src="https://t4.ftcdn.net/jpg/06/59/13/31/360_F_659133125_S0VAnb5NNknokdB47K61zDsczWgZJTMf.jpg"
-              alt="Logo"
-              className="logo-image"
+              src={profileImageUrl}
+              alt="Profile"
+              className="sidebar-avatar"
             />
           </div>
           {!loading && isOpen && (

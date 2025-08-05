@@ -1,4 +1,6 @@
 import React from 'react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 
 import Sidebar from './components/Sidebar';
@@ -11,6 +13,7 @@ import VerifyOtp from './pages/VerifyOtp';
 import ResetPassword from './pages/ResetPassword';
 import FilterPage from './pages/FilterPage';
 
+import ProfilePage from './pages/ProfilePage';
 import Home from './pages/Home';
 import Watchlist from './pages/Watchlist';
 import Watching from './pages/Watching';
@@ -82,7 +85,7 @@ const AppLayout = () => {
           <Route path="/clubs/create" element={isAuthenticated ? <CreateClub /> : <Navigate to="/login" />} />
           <Route path="/club/:id" element={isAuthenticated ? <ClubPage /> : <Navigate to="/login" />} />
           <Route path="/search" element={isAuthenticated ? <Search /> : <Navigate to="/login" />} />
-
+          <Route path="/profile" element={<ProfilePage />} />
           {/* Admin */}
           <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
         </Routes>
@@ -93,13 +96,14 @@ const AppLayout = () => {
 
 const App = () => (
   <Router>
-    <ThemeProvider>
-      <AuthProvider>
-        <ClubProvider>
-          <AppLayout />
-        </ClubProvider>
-      </AuthProvider>
-    </ThemeProvider>
+    <ToastContainer />
+      <ThemeProvider>
+        <AuthProvider>
+          <ClubProvider>
+            <AppLayout />
+          </ClubProvider>
+        </AuthProvider>
+      </ThemeProvider>
   </Router>
 );
 
