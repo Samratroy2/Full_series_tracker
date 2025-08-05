@@ -26,12 +26,13 @@ const Register = () => {
         body: JSON.stringify({ name, email, password }),
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.message || 'Registration failed');
+        throw new Error(data.message || 'Registration failed');
       }
 
-      alert('Registration successful! Please log in.');
+      alert(`Registration successful!\nYour User ID: ${data.userId}\nPlease log in.`);
       navigate('/login');
     } catch (err) {
       setError(err.message);

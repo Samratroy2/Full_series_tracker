@@ -1,3 +1,5 @@
+// backend\routes\authRoutes.js
+
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
@@ -91,7 +93,7 @@ router.post('/reset-password', async (req, res) => {
   }
 });
 
-// ✅ Signup
+// ✅ Signup with unique userId
 router.post('/signup', async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -99,11 +101,23 @@ router.post('/signup', async (req, res) => {
     const exists = await User.findOne({ email });
     if (exists) return res.status(400).json({ message: 'User already exists' });
 
+    // 🔁 Generate unique userId: name + 4-digit number
+    const baseId = name.toLowerCase().replace(/\s+/g, '');
+    let userId;
+    let isUnique = false;
+
+    while (!isUnique) {
+      const suffix = Math.floor(1000 + Math.random() * 9000);
+      userId = `${baseId}${suffix}`;
+      const existing = await User.findOne({ userId });
+      if (!existing) isUnique = true;
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ name, email, password: hashedPassword });
+    const newUser = new User({ name, email, password: hashedPassword, userId });
 
     await newUser.save();
-    res.status(201).json({ message: 'Signup successful', user: newUser });
+    res.status(201).json({ message: 'Signup successful', userId });
   } catch (err) {
     res.status(500).json({ message: 'Signup failed', error: err.message });
   }
